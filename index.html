@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusFind — Lost & Found</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div style="display:flex;align-items:center;gap:28px;">
+    <div class="logo">Campus<span class="logo-dot">Find</span></div>
+    <nav class="nav-links">
+      <a href="#" onclick="scrollToSection('recent'); return false;">Home</a>
+      <a href="#" onclick="openModal('lostModal'); return false;">Report Lost</a>
+      <a href="#" onclick="openModal('foundModal'); return false;">Report Found</a>
+      <a href="#" onclick="scrollToSection('cats'); return false;">Categories</a>
+    </nav>
+  </div>
+  <form class="search-bar" onsubmit="handleSearch(event)">
+    <input type="search" id="searchInput" placeholder="Search items...">
+    <button type="submit">Search</button>
+  </form>
+  <div class="header-btns">
+    <button class="btn-login" onclick="openAuth('login')">Log In</button>
+    <button class="btn-signup" onclick="openAuth('signup')">Sign Up</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">🎓 <span>CampusFind</span> — Student Item Recovery Network</div>
+    <h1>Lost Something?<br>We'll Help You <em>Find It.</em></h1>
+    <p>Connect with fellow students to reunite lost belongings with their owners. Fast, simple, and built for campus life.</p>
+    <div class="hero-btns">
+      <button class="btn-hero-found" onclick="openModal('foundModal')">🔍 I Found Something</button>
+      <button class="btn-hero-lost" onclick="openModal('lostModal')">📋 Report Lost Item</button>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num" id="statItems">247</div><div class="stat-label">Items Reported</div></div>
+  <div class="stat"><div class="stat-num" id="statReturned">183</div><div class="stat-label">Successfully Returned</div></div>
+  <div class="stat"><div class="stat-num" id="statStudents">420</div><div class="stat-label">Students Helped</div></div>
+  <div class="stat"><div class="stat-num" id="statRate">74%</div><div class="stat-label">Success Rate</div></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- QUICK ACTIONS -->
+  <section class="quick-actions">
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="qa-grid">
+      <div class="qa-card" onclick="handleSearch(null, true)">
+        <div class="qa-icon" style="background:#e8f0ff;">🔎</div>
+        <h3>Search Lost Items</h3>
+        <p>Browse all reported lost items on campus</p>
+      </div>
+      <div class="qa-card" onclick="openModal('lostModal')">
+        <div class="qa-icon" style="background:#fdeaea;">📋</div>
+        <h3>Report Lost</h3>
+        <p>Lost something? File a report now</p>
+      </div>
+      <div class="qa-card" onclick="openModal('foundModal')">
+        <div class="qa-icon" style="background:#e6f7f1;">📦</div>
+        <h3>Report Found</h3>
+        <p>Found an item? Help return it to the owner</p>
+      </div>
+      <div class="qa-card" onclick="showAllReports()">
+        <div class="qa-icon" style="background:#fff4e6;">📋</div>
+        <h3>View All Reports</h3>
+        <p>See every active lost and found report</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="categories" id="cats">
+    <h2 class="section-title">Browse by Category</h2>
+    <div class="cat-grid">
+      <button class="cat-btn active" onclick="filterCategory('all', this)">🗂 All</button>
+      <button class="cat-btn" onclick="filterCategory('Electronics', this)">💻 Electronics</button>
+      <button class="cat-btn" onclick="filterCategory('Bags', this)">🎒 Bags</button>
+      <button class="cat-btn" onclick="filterCategory('Books', this)">📚 Books</button>
+      <button class="cat-btn" onclick="filterCategory('Clothing', this)">👕 Clothing</button>
+      <button class="cat-btn" onclick="filterCategory('Keys / ID Cards', this)">🔑 Keys / ID Cards</button>
+      <button class="cat-btn" onclick="filterCategory('Others', this)">📦 Others</button>
+    </div>
+  </section>
+
+  <!-- RECENT REPORTS -->
+  <section class="recent-reports" id="recent">
+    <h2 class="section-title">Recent Reports</h2>
+    <div class="reports-filter">
+      <button class="filter-btn active" onclick="filterType('all', this)">All</button>
+      <button class="filter-btn" onclick="filterType('lost', this)">🔴 Lost</button>
+      <button class="filter-btn" onclick="filterType('found', this)">🟢 Found</button>
+    </div>
+    <div class="reports-grid" id="reportsGrid">
+      <!-- Cards injected by JS -->
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-it-works">
+    <h2 class="section-title">How It Works</h2>
+    <div class="hiw-grid">
+      <div class="hiw-step">
+        <div class="hiw-num">1</div>
+        <h3>Report It</h3>
+        <p>File a lost or found report with item details, location, and contact info.</p>
+      </div>
+      <div class="hiw-step">
+        <div class="hiw-num">2</div>
+        <h3>Get Matched</h3>
+        <p>Our system matches lost and found reports by category, description, and location.</p>
+      </div>
+      <div class="hiw-step">
+        <div class="hiw-num">3</div>
+        <h3>Connect</h3>
+        <p>Contact the finder or reporter directly through the platform securely.</p>
+      </div>
+      <div class="hiw-step">
+        <div class="hiw-num">4</div>
+        <h3>Reunite!</h3>
+        <p>Meet up on campus and collect your belongings. Mark the case as resolved.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<div class="stats-bar" style="background:#0d1b3e;">
+</div>
+<footer>
+  <div class="footer-logo">Campus<span style="color:#60c1ff;">Find</span></div>
+  <p>Helping students find their lost belongings quickly and safely.</p>
+  <div class="footer-links">
+    <a href="#">Home</a>
+    <a href="#" onclick="openModal('lostModal'); return false;">Report Lost</a>
+    <a href="#" onclick="openModal('foundModal'); return false;">Report Found</a>
+    <a href="#" onclick="showAllReports(); return false;">All Reports</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="footer-social">🌐📘🐦📸</div>
+  <div class="footer-copy">© 2025 CampusFind. All Rights Reserved.</div>
+</footer>
+
+<!-- ═══ AUTH MODAL ═══ -->
+<div id="authModal" class="modal" onclick="closeOnBackdrop(event, 'authModal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('authModal')">✕</button>
+    <h2 id="authTitle">Log In</h2>
+    <form id="authForm" onsubmit="handleAuth(event)">
+      <div class="form-group" id="nameField" style="display:none;">
+        <label>Full Name</label>
+        <input type="text" id="authName" placeholder="Your full name">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="authEmail" placeholder="you@university.edu" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn-submit" id="authSubmitBtn">Log In</button>
+    </form>
+    <p class="auth-switch" id="authSwitch">
+      Don't have an account? <span onclick="toggleAuth()">Sign up</span>
+    </p>
+  </div>
+</div>
+
+<!-- ═══ FOUND MODAL ═══ -->
+<div id="foundModal" class="modal" onclick="closeOnBackdrop(event, 'foundModal')">
+  <div class="modal-box wide">
+    <button class="modal-close" onclick="closeModal('foundModal')">✕</button>
+    <h2>📦 Report Found Item</h2>
+    <form id="foundForm" onsubmit="handleFoundSubmit(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Your Full Name</label>
+          <input type="text" id="f-name" placeholder="Enter your name" required>
+        </div>
+        <div class="form-group">
+          <label>Your Phone Number</label>
+          <input type="tel" id="f-phone" placeholder="e.g. 9876543210" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Item Name</label>
+          <input type="text" id="f-item" placeholder="What item did you find?" required>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="f-cat" required>
+            <option value="">Select category</option>
+            <option>Electronics</option>
+            <option>Bags</option>
+            <option>Books</option>
+            <option>Clothing</option>
+            <option>Keys / ID Cards</option>
+            <option>Others</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="f-desc" placeholder="Describe the item — color, brand, unique marks..." required></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date Found</label>
+          <input type="date" id="f-date" required>
+        </div>
+        <div class="form-group">
+          <label>Location Found</label>
+          <input type="text" id="f-loc" placeholder="Building / Area" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Upload Image (optional)</label>
+        <input type="file" id="f-img" accept="image/*">
+      </div>
+      <button type="submit" class="btn-submit green">Submit Found Report</button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══ LOST MODAL ═══ -->
+<div id="lostModal" class="modal" onclick="closeOnBackdrop(event, 'lostModal')">
+  <div class="modal-box wide">
+    <button class="modal-close" onclick="closeModal('lostModal')">✕</button>
+    <h2>📋 Report Lost Item</h2>
+    <form id="lostForm" onsubmit="handleLostSubmit(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Your Full Name</label>
+          <input type="text" id="l-name" placeholder="Enter your name" required>
+        </div>
+        <div class="form-group">
+          <label>Your Phone Number</label>
+          <input type="tel" id="l-phone" placeholder="e.g. 9876543210" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Item Name</label>
+          <input type="text" id="l-item" placeholder="What did you lose?" required>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="l-cat" required>
+            <option value="">Select category</option>
+            <option>Electronics</option>
+            <option>Bags</option>
+            <option>Books</option>
+            <option>Clothing</option>
+            <option>Keys / ID Cards</option>
+            <option>Others</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="l-desc" placeholder="Describe the item — color, brand, unique marks..." required></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date Lost</label>
+          <input type="date" id="l-date" required>
+        </div>
+        <div class="form-group">
+          <label>Last Seen Location</label>
+          <input type="text" id="l-loc" placeholder="Building / Area" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Upload Image (optional)</label>
+        <input type="file" id="l-img" accept="image/*">
+      </div>
+      <button type="submit" class="btn-submit">Submit Lost Report</button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══ CONTACT MODAL ═══ -->
+<div id="contactModal" class="modal" onclick="closeOnBackdrop(event, 'contactModal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('contactModal')">✕</button>
+    <h2>📞 Contact Info</h2>
+    <p style="color:var(--muted); font-size:14px; margin-bottom:16px;">You can reach the reporter at:</p>
+    <div id="contactDetails" style="background:var(--bg); padding:20px; border-radius:12px; border:1.5px solid var(--border);">
+    </div>
+    <div style="margin-top:16px; padding:14px; background:var(--blue-light); border-radius:10px; font-size:13px; color:var(--navy);">
+      💡 <strong>Tip:</strong> Meet in a public campus area for safe item exchange. Always verify the item before handing it over.
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
