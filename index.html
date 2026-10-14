@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TraceBack — Lost &amp; Found</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <div class="logo">
+      <div class="logo-dot"></div>
+      TraceBack
+    </div>
+    <div class="nav-right">
+     <div class="user-menu" id="userMenu">
+
+    <button
+        class="btn btn-outline"
+        id="loginBtn"
+        onclick="openAuth()">
+
+        Sign in
+
+    </button>
+
+    <div class="dropdown" id="dropdownMenu">
+
+        <div class="drop-item" onclick="openMyPosts()">
+            📋 My Posts
+        </div>
+
+        <div class="drop-item" onclick="openProfile()">
+            👤 Profile
+        </div>
+
+        <div class="drop-item logout" onclick="logoutUser()">
+            🚪 Logout
+        </div>
+
+    </div>
+
+</div>
+      <button class="btn btn-solid"   onclick="openPost()">Post item</button>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span class="eyebrow-line"></span>
+      Community Lost &amp; Found
+      <span class="eyebrow-line"></span>
+    </div>
+    <h1>
+      Reuniting <em><span class="lost-w">lost</span></em><br>
+      with <em><span class="found-w">found</span></em>
+    </h1>
+    <p class="hero-sub">
+      Post what you've lost or what you've found. Smart matching connects
+      items by keyword, category, and location.
+    </p>
+    <div class="hero-ctas">
+      <button class="btn-hero btn-hero-lost"  onclick="openPost('lost')">I lost something</button>
+      <button class="btn-hero btn-hero-found" onclick="openPost('found')">I found something</button>
+    </div>
+  </section>
+
+  <!-- ── STATS ── -->
+  <div class="stats-row">
+    <div class="stat-cell">
+      <div class="stat-num" id="stat-total">0</div>
+      <div class="stat-lbl">Items posted</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num" id="stat-lost">0</div>
+      <div class="stat-lbl">Still lost</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num" id="stat-found">0</div>
+      <div class="stat-lbl">Awaiting claim</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num" id="stat-matched">3</div>
+      <div class="stat-lbl">Matches made</div>
+    </div>
+  </div>
+
+  <!-- ── SEARCH & FILTERS ── -->
+  <div class="search-wrap">
+    <div class="search-row">
+      <div class="search-box">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          class="search-input"
+          id="searchInput"
+          placeholder="Search items, descriptions, locations…"
+          oninput="renderItems()"
+        >
+      </div>
+      <select class="filter-sel" id="catFilter" onchange="renderItems()">
+        <option value="">All categories</option>
+        <option value="electronics">Electronics</option>
+        <option value="accessories">Accessories</option>
+        <option value="documents">Documents</option>
+        <option value="clothing">Clothing</option>
+        <option value="keys">Keys</option>
+        <option value="bags">Bags &amp; Wallets</option>
+        <option value="pets">Pets</option>
+        <option value="other">Other</option>
+      </select>
+      <select class="filter-sel" id="locFilter" onchange="renderItems()">
+        <option value="">All locations</option>
+        <option value="station">Railway Station</option>
+        <option value="market">Market Area</option>
+        <option value="college">College Campus</option>
+        <option value="park">Park</option>
+        <option value="bus">Bus Stand</option>
+        <option value="mall">Mall</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="pills">
+      <button class="pill active"   onclick="setType('all',  this)">All items</button>
+      <button class="pill p-lost"   onclick="setType('lost',  this)">Lost</button>
+      <button class="pill p-found"  onclick="setType('found', this)">Found</button>
+    </div>
+  </div>
+
+  <!-- ── ITEMS GRID ── -->
+  <div class="grid-wrap">
+    <div class="grid-hd">
+      <span class="grid-title" id="gridTitle">All items</span>
+      <span class="grid-count" id="gridCount"></span>
+    </div>
+    <div class="items-grid" id="itemsGrid"></div>
+  </div>
+
+  <!-- ── POST SHEET ── -->
+  <div class="overlay" id="postOverlay" onclick="bgClose(event, 'postOverlay')">
+    <div class="sheet">
+      <div class="sheet-hd">
+        <span class="sheet-title">Post an item</span>
+        <button class="close" onclick="closePost()">✕</button>
+      </div>
+
+      <div class="frow">
+        <label>Type</label>
+        <div class="type-row">
+          <button class="type-btn" id="btnLost"  onclick="selectType('lost')">Lost</button>
+          <button class="type-btn" id="btnFound" onclick="selectType('found')">Found</button>
+        </div>
+      </div>
+
+      <div class="frow">
+        <label>Item name *</label>
+        <input class="finput" id="fName" placeholder="e.g. Black leather wallet, iPhone 14 Pro…">
+      </div>
+
+      <div class="frow">
+        <label>Category</label>
+        <select class="fselect" id="fCat">
+          <option value="electronics">Electronics</option>
+          <option value="accessories">Accessories</option>
+          <option value="documents">Documents</option>
+          <option value="clothing">Clothing</option>
+          <option value="keys">Keys</option>
+          <option value="bags">Bags &amp; Wallets</option>
+          <option value="pets">Pets</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="frow">
+        <label>Description</label>
+        <textarea class="ftextarea" id="fDesc" placeholder="Colour, brand, distinguishing features…"></textarea>
+      </div>
+
+      <div class="fgrid">
+        <div class="frow">
+          <label>Location</label>
+          <select class="fselect" id="fLoc">
+            <option value="station">Railway Station</option>
+            <option value="market">Market Area</option>
+            <option value="college">College Campus</option>
+            <option value="park">Park</option>
+            <option value="bus">Bus Stand</option>
+            <option value="mall">Mall</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="frow">
+          <label>Date</label>
+          <input class="finput" id="fDate" type="date">
+        </div>
+      </div>
+
+      <div class="frow">
+        <label>Contact</label>
+        <input class="finput" id="fContact" placeholder="Phone or email">
+      </div>
+
+      <div class="frow">
+        <label>Photo <span>(optional)</span></label>
+        <div class="upload-zone" onclick="document.getElementById('fFile').click()">
+          <div class="upload-ico">↑</div>
+          <div class="upload-lbl"><span>Click to upload</span> or drag &amp; drop</div>
+          <div class="upload-name" id="uploadName"></div>
+        </div>
+        <input type="file" id="fFile" accept="image/*" style="display:none" onchange="handleFile(this)">
+      </div>
+
+      <button class="submit-btn" onclick="submitPost()">Post item</button>
+    </div>
+  </div>
+
+  <!-- ── DETAIL MODAL ── -->
+  <div class="detail-wrap" id="detailWrap" onclick="bgCloseDetail(event)">
+    <div class="detail-box" id="detailBox"></div>
+  </div>
+
+  <!-- ───────── LOGIN POPUP ───────── -->
+
+<div class="auth-wrap" id="authWrap" onclick="bgClose(event,'authWrap')">
+
+    <div class="auth-box">
+
+        <div class="sheet-hd">
+            <span class="sheet-title">Welcome back</span>
+
+            <button class="close" onclick="closeAuth()">
+                ✕
+            </button>
+        </div>
+
+        <div class="frow">
+            <label>Email</label>
+            <input
+                class="finput"
+                id="loginEmail"
+                placeholder="you@email.com">
+        </div>
+
+        <div class="frow">
+            <label>Password</label>
+            <input
+                class="finput"
+                id="loginPassword"
+                type="password"
+                placeholder="••••••••">
+        </div>
+
+        <button
+            class="submit-btn"
+            onclick="loginUser()">
+
+            Sign in
+
+        </button>
+
+        <p
+            style="text-align:center;
+                   margin-top:14px;
+                   font-size:.8rem;
+                   color:var(--text-3);">
+
+            No account?
+
+            <span
+                style="color:var(--text);
+                       font-weight:600;
+                       cursor:pointer;"
+                onclick="openRegister()">
+
+                Sign up free
+
+            </span>
+
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ───────── REGISTER POPUP ───────── -->
+
+<div class="auth-wrap"
+     id="registerWrap"
+     onclick="bgClose(event,'registerWrap')">
+
+    <div class="auth-box">
+
+        <div class="sheet-hd">
+
+            <span class="sheet-title">
+                Create Account
+            </span>
+
+            <button
+                class="close"
+                onclick="closeRegister()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div class="frow">
+            <label>Name</label>
+            <input
+                class="finput"
+                id="regName"
+                placeholder="Your name">
+        </div>
+
+        <div class="frow">
+            <label>Email</label>
+            <input
+                class="finput"
+                id="regEmail"
+                placeholder="you@email.com">
+        </div>
+
+        <div class="frow">
+            <label>Phone</label>
+            <input
+                class="finput"
+                id="regPhone"
+                placeholder="9876543210">
+        </div>
+
+        <div class="frow">
+            <label>Password</label>
+            <input
+                class="finput"
+                id="regPassword"
+                type="password">
+        </div>
+
+        <button
+            class="submit-btn"
+            onclick="registerUser()">
+
+            Create Account
+
+        </button>
+
+        <p
+            style="text-align:center;
+                   margin-top:14px;
+                   font-size:.8rem;
+                   color:var(--text-3);">
+
+            Already have an account?
+
+            <span
+                style="color:var(--text);
+                       font-weight:600;
+                       cursor:pointer;"
+                onclick="openAuthFromRegister()">
+
+                Sign in
+
+            </span>
+
+        </p>
+
+    </div>
+
+</div>
+
+  <!-- ── TOASTS ── -->
+  <div class="toasts" id="toasts"></div>
+
+  <script src="main.js"></script>
+</body>
+</html>
